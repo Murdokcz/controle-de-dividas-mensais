@@ -1,8 +1,3 @@
-
-Built by https://www.blackbox.ai
-
----
-
 ```markdown
 # Controle de Dívidas Mensais
 
@@ -61,10 +56,3 @@ The project's directory structure is as follows:
 ├── index.html      # The main HTML file for the application
 ├── script.js       # Contains all the JavaScript logic for functionalities
 └── styles.css      # Contains the styles for the application
-```
-
-## License
-This project is open-source and available under the MIT License. Feel free to fork it or contribute to it!
-```
-
-Make sure to replace `https://github.com/yourusername/controle-de-dividas-mensais.git` with the actual URL of your GitHub repository. Adjust any part of the README.md file as necessary to better fit your project's style or needs.
