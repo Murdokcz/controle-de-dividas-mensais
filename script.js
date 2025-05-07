@@ -487,3 +487,78 @@ function clearResults() {
 // Initialize with one extra income and one debt input for user convenience
 addExtraIncomeBtn.click();
 addDebtBtn.click();
+
+// XLSX Download functionality
+const downloadXlsxBtn = document.getElementById('downloadXlsx');
+
+function generateXlsxData() {
+  const data = getSavedData();
+  if (data.length === 0) {
+    alert('Nenhum dado salvo para exportar.');
+    return null;
+  }
+
+  // Prepare worksheet data as array of arrays (rows)
+  const wsData = [
+    [
+      'Nome do Salvo',
+      'Data do Salvamento',
+      'Dia do Pagamento Principal',
+      'Valor do Pagamento Principal',
+      'Rendas Extras (Nome - Dias - Valor)',
+      'Dívidas (Nome - Vencimento - Valor)',
+      'Total de Dívidas',
+      'Total de Rendimentos',
+      'Saldo',
+      'Status do Saldo',
+      'Dívidas para Pagar',
+      'Sugestões de Melhoria'
+    ]
+  ];
+
+  data.forEach(entry => {
+    const r = entry.results;
+    // Remove the "name - day - " prefix and keep only the value for extra incomes and debts to pay
+    const extraIncomesStr = r.extraIncomes.map(ei => `${formatCurrency(ei.amount)}`).join('; ');
+    const debtsStr = r.debts.map(d => `${formatCurrency(d.amount)}`).join('; ');
+    const debtsToPayStr = r.debtsToPay.map(d => `${formatCurrency(d.amount)}`).join('; ');
+
+    wsData.push([
+      entry.name,
+      new Date(entry.timestamp).toLocaleString('pt-BR'),
+      r.paymentDay,
+      r.paymentAmount,
+      extraIncomesStr,
+      debtsStr,
+      r.totalDebts,
+      r.totalIncome,
+      r.balance,
+      r.balanceStatus,
+      debtsToPayStr,
+      r.improvementSuggestions
+    ]);
+  });
+
+  return wsData;
+}
+
+downloadXlsxBtn.addEventListener('click', () => {
+  console.log('Download XLSX button clicked');
+  const wsData = generateXlsxData();
+  if (!wsData) {
+    console.log('No data to export');
+    return;
+  }
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  console.log('Worksheet data:', ws);
+  XLSX.utils.book_append_sheet(wb, ws, 'Dados Salvos');
+
+  try {
+    XLSX.writeFile(wb, 'dados_salvos_dividas.xlsx');
+    console.log('XLSX file generated and download triggered');
+  } catch (error) {
+    console.error('Error generating XLSX file:', error);
+  }
+});
